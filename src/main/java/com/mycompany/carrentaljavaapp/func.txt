@@ -1,0 +1,21 @@
+private void minimizeAnimation() {
+    new Thread(() -> {
+        try {
+            int x = getX();
+            int y = getY();
+            int w = getWidth();
+            int h = getHeight();
+
+            for (int i = 0; i < 20; i++) {
+                setBounds(x, y + (i * 10), w, h - (i * 5)); 
+                Thread.sleep(10);
+            }
+
+            // بعد الأنيميشن
+            setState(JFrame.ICONIFIED);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }).start();
+}

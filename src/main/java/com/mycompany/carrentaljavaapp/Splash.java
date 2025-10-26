@@ -95,7 +95,7 @@ public class Splash extends javax.swing.JFrame {
        MySplash.setVisible(true);
        try {
            for(int i=0;i<=100;i++){
-               Thread.sleep(40);
+               Thread.sleep(60);
                MySplash.MyProgress.setValue(i);
            }
        } catch(Exception e){

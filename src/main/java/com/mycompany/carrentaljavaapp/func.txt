@@ -19,3 +19,20 @@ private void minimizeAnimation() {
         }
     }).start();
 }
+
+
+
+
+
+
+public class DBConnection {
+            try{
+            String path = "C:/ProgramData/CarRental/car_sqlite.db";
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:"+path);
+            System.out.println("SQLite Connected at: "+path);
+            return conn;
+        } catch(SQLException e){
+            System.out.println("Connection Error: "+e.getMessage());
+            return null;
+        }
+}

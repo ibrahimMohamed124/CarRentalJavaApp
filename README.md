@@ -110,7 +110,7 @@ Located in:
 `src/database/DBConnection.java`
 
 ```java
-String path = "C:/ProgramData/CarRental/car_sqlite.sqlite";
+String path = "car_sqlite.sqlite";
 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + path);
 ```
 

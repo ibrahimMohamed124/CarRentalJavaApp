@@ -86,7 +86,7 @@ Each module is **loosely coupled**, allowing independent updates or database mig
 ## 🚀 How to Run
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/CarRentalSystem.git
+   git clone https://github.com/ibrahimMohamed124/CarRentalJavaApp
    cd CarRentalSystem
    ```
 
@@ -94,7 +94,7 @@ Each module is **loosely coupled**, allowing independent updates or database mig
 
 3. **Ensure SQLite Database Path Exists**
    ```text
-   C:/ProgramData/CarRental/car_sqlite.sqlite
+   car_sqlite.sqlite
    ```
    *(Created automatically on first launch if it doesn’t exist.)*
 

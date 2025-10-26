@@ -1,7 +1,8 @@
 # 🚗 Car Rental Management System
 
 ## 🧠 Overview
-![preview image][preview.png]
+![preview image](preview.png)
+
 **Car Rental Management System** is a modern, desktop-based Java application built using **Java Swing** and **SQLite**.  
 It provides a full-featured solution for managing car rentals, customers, and transactions — all within a standalone, offline-capable application.
 

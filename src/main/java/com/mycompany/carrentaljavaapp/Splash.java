@@ -16,36 +16,6 @@ public class Splash extends JFrame {
     private static final Color TEXT_COLOR = new Color(230, 230, 230);
     private static final Color LOADING_TEXT_COLOR = new Color(180, 180, 180);
 
-    // دالة مساعدة لتحميل الصورة بطريقة آمنة
-    private Image loadImageSafely(String path) {
-        try {
-            // التحقق من أن المسار ليس أيقونة نظام
-            if (!path.contains(".")) {
-                return null;
-            }
-            URL imageUrl = getClass().getResource(path);
-            if (imageUrl != null) {
-                return new ImageIcon(imageUrl).getImage();
-            }
-            System.err.println("❌ ERROR: Image not found at path: " + path);
-        } catch (Exception e) {
-            System.err.println("❌ ERROR loading image: " + e.getMessage());
-        }
-        return null;
-    }
-
-    // دالة مساعدة لتحميل أيقونة كـ ImageIcon
-    private ImageIcon loadIconImageSafely(String path, int width, int height) {
-        Image img = loadImageSafely(path);
-        if (img != null) {
-            // لتغيير الحجم إذا لزم الأمر
-            Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-            return new ImageIcon(scaled);
-        }
-        return (ImageIcon) UIManager.getIcon("OptionPane.informationIcon");
-    }
-
-
     public Splash() {
         FlatDarkLaf.setup();
         setUndecorated(true);
@@ -53,8 +23,11 @@ public class Splash extends JFrame {
         setSize(520, 380);
         setLocationRelativeTo(null);
 
-        // تحميل صورة الخلفية
-        backgroundImage = loadImageSafely("/car_bg.png");
+        // ✅ تعيين أيقونة التطبيق في شريط العنوان
+        setIconImage(loadImageSafely("/images/logo.png"));
+
+        // ✅ تحميل صورة الخلفية
+        backgroundImage = loadImageSafely("/images/car_bg.png");
 
         // --- البانل بخلفية الصورة ---
         JPanel panel = new JPanel() {
@@ -76,32 +49,26 @@ public class Splash extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        // --- 1. العنوان المُركب مع الأيقونة الجديدة ---
+        // --- 1. العنوان المُركب مع الأيقونة ---
         JPanel titlePanel = new JPanel();
         titlePanel.setOpaque(false);
         titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
 
-        // 1-أ: الأيقونة الجديدة للعنوان (صورة 24x24)
         JLabel titleIcon = new JLabel();
-        // ⚠ تم افتراض وجود أيقونة صغيرة باسم /car48.png
-        titleIcon.setIcon(loadIconImageSafely("/car48.png", 27, 25));
+        titleIcon.setIcon(loadIconImageSafely("/images/car48.png", 27, 25));
         titlePanel.add(titleIcon);
 
-        // 1-ب: نص العنوان
         titleLabel = new JLabel("CAR RENTAL SYSTEM", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(PROGRESS_COLOR);
         titlePanel.add(titleLabel);
-
         titlePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
-        // --- 2. الأيقونة المركزية الكبيرة (تصحيح التحميل) ---
+        // --- 2. الأيقونة المركزية الكبيرة ---
         iconLabel = new JLabel();
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // تم تفعيل السطر وتحميل أيقونة كبيرة (80x80)
-        // iconLabel.setIcon(loadIconImageSafely("/car48.png", 80, 80));
-
+        // يمكنك لاحقًا تعيين أيقونة هنا إن أردت، مثل:
+        // iconLabel.setIcon(loadIconImageSafely("/images/logo.png", 100, 100));
 
         // --- نص حالة التحميل ---
         loadingLabel = new JLabel("Initializing Application...", SwingConstants.CENTER);
@@ -109,8 +76,7 @@ public class Splash extends JFrame {
         loadingLabel.setForeground(LOADING_TEXT_COLOR);
         loadingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
-        // --- شريط التحميل (ProgressBar) ---
+        // --- شريط التحميل ---
         progressBar = new JProgressBar();
         progressBar.setMaximum(100);
         progressBar.setValue(0);
@@ -121,7 +87,7 @@ public class Splash extends JFrame {
         progressBar.putClientProperty("JComponent.roundRect", true);
         progressBar.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 
-        // --- الترتيب النهائي ---
+        // --- الترتيب ---
         panel.add(Box.createVerticalGlue());
         panel.add(titlePanel);
         panel.add(Box.createRigidArea(new Dimension(0, 35)));
@@ -133,6 +99,31 @@ public class Splash extends JFrame {
         panel.add(Box.createVerticalGlue());
 
         add(panel);
+    }
+
+    // ✅ دالة تحميل آمنة لصورة كـ Image
+    private Image loadImageSafely(String path) {
+        try {
+            URL imageUrl = getClass().getResource(path);
+            if (imageUrl != null) {
+                return new ImageIcon(imageUrl).getImage();
+            } else {
+                System.err.println("❌ Image not found: " + path);
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error loading image: " + e.getMessage());
+        }
+        return null;
+    }
+
+    // ✅ دالة تحميل صورة كـ ImageIcon مع إمكانية تغيير الحجم
+    private ImageIcon loadIconImageSafely(String path, int width, int height) {
+        Image img = loadImageSafely(path);
+        if (img != null) {
+            Image scaled = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(scaled);
+        }
+        return (ImageIcon) UIManager.getIcon("OptionPane.informationIcon");
     }
 
     public static void main(String[] args) {
@@ -161,7 +152,6 @@ public class Splash extends JFrame {
                 }
 
                 SwingUtilities.invokeLater(() -> {
-                    // 🔑 التعديل هنا: تفعيل كلاس Login وإزالة الـ Dialog
                     new Login().setVisible(true);
                     splash.dispose();
                 });

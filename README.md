@@ -29,7 +29,7 @@ src/
 │           ├── models/                  # Data models
 │           │   └── CarModel.java
 │           │
-│           ├── Utils/Localization/      # Utility classes
+│           ├── utils/Localization/      # Utility classes
 │           │   ├── AppTheme.java
 │           │   ├── LocalizationUtil.java
 │           │   └── StyleUtils.java

@@ -1,4 +1,4 @@
-package Utils.Localization;
+package utils.UIHelper;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Dimension;

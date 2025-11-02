@@ -1,4 +1,4 @@
-package Utils.Localization;
+package utils.UIHelper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;

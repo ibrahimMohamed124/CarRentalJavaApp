@@ -1,4 +1,4 @@
-package Utils.UIHelper;
+package utils.UIHelper;
 
 import javax.swing.*;
 import java.awt.*;

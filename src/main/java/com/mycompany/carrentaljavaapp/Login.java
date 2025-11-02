@@ -1,25 +1,17 @@
 package com.mycompany.carrentaljavaapp;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import utils.UIHelper.BaseFrame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Objects;
 import java.net.URL;
 
-public class Login extends JFrame {
+public class Login extends BaseFrame {
 
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JButton loginButton;
-    private JLabel titleLabel;
-    private JLabel usernameLabel;
-    private JLabel passwordLabel;
-    private JButton createAccountButton;
-    private JButton forgotPasswordButton;
-    private JPanel contentPanel;
+    private final JTextField usernameField;
+    private final JPasswordField passwordField;
 
     private Image backgroundImage;
 
@@ -35,7 +27,7 @@ public class Login extends JFrame {
         try {
             URL imageUrl = getClass().getResource("/resources/car_background.jpg");
             if (imageUrl == null) {
-                imageUrl = getClass().getClassLoader().getResource("car_background.jpg");
+                imageUrl = getClass().getClassLoader().getResource("images/car_background.jpg");
             }
 
             if (imageUrl != null) {
@@ -50,6 +42,7 @@ public class Login extends JFrame {
 
 
     public Login() {
+        super("Car Rental Solutions","- Login");
         setTitle("Car Rental Solutions - Login");
         setSize(450, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,7 +68,8 @@ public class Login extends JFrame {
         add(backgroundPanel, BorderLayout.CENTER);
 
         // ** 2. لوحة المحتوى (تأثير الزجاج الداكن) **
-        contentPanel = new JPanel() {
+        // رسم خلفية شبه شفافة مع زوايا مستديرة
+        JPanel contentPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -105,7 +99,7 @@ public class Login extends JFrame {
 
 
         // العنوان "CAR RENTAL SOLUTIONS" - تم تصحيح الخطأ هنا
-        titleLabel = new JLabel("CAR RENTAL SOLUTIONS");
+        JLabel titleLabel = new JLabel("CAR RENTAL SOLUTIONS");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 25)); // تم إزالة علامات النجمة
         titleLabel.setForeground(TITLE_COLOR); // تم إزالة علامات النجمة
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -124,7 +118,7 @@ public class Login extends JFrame {
         }
 
         // اسم المستخدم والحقول
-        usernameLabel = new JLabel("USERNAME:");
+        JLabel usernameLabel = new JLabel("USERNAME:");
         usernameLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         usernameLabel.setForeground(Color.WHITE);
         usernameLabel.setBounds(50, 175, 150, 25);
@@ -140,7 +134,7 @@ public class Login extends JFrame {
         contentPanel.add(usernameField);
 
         // كلمة المرور
-        passwordLabel = new JLabel("PASSWORD:");
+        JLabel passwordLabel = new JLabel("PASSWORD:");
         passwordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         passwordLabel.setForeground(Color.WHITE);
         passwordLabel.setBounds(50, 270, 150, 25);
@@ -156,7 +150,7 @@ public class Login extends JFrame {
         contentPanel.add(passwordField);
 
         // زر اللوجن
-        loginButton = new JButton("LOGIN");
+        JButton loginButton = new JButton("LOGIN");
         loginButton.putClientProperty("JButton.buttonType", "roundRect");
         loginButton.setFont(new Font("Segoe UI", Font.BOLD, 20));
         loginButton.setBackground(ACCENT_COLOR);
@@ -166,7 +160,7 @@ public class Login extends JFrame {
         contentPanel.add(loginButton);
 
         // الأزرار السفلية
-        forgotPasswordButton = new JButton("Forgot Password?");
+        JButton forgotPasswordButton = new JButton("Forgot Password?");
         forgotPasswordButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         forgotPasswordButton.setForeground(LINK_COLOR);
         forgotPasswordButton.setBorderPainted(false);
@@ -175,7 +169,7 @@ public class Login extends JFrame {
         forgotPasswordButton.setBounds(20, 450, 150, 20);
         contentPanel.add(forgotPasswordButton);
 
-        createAccountButton = new JButton("Create New Account");
+        JButton createAccountButton = new JButton("Create New Account");
         createAccountButton.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         createAccountButton.setForeground(LINK_COLOR);
         createAccountButton.setBorderPainted(false);
@@ -185,23 +179,20 @@ public class Login extends JFrame {
         contentPanel.add(createAccountButton);
 
         // إضافة Action Listeners
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+        loginButton.addActionListener(_ -> {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
 
-                if (username.equals("ibrahim") && password.equals("ibrahim")) {
-                    JOptionPane.showMessageDialog(Login.this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    new Cars().setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(Login.this, "Invalid Username or Password", "Login Error", JOptionPane.ERROR_MESSAGE);
-                }
+            if (username.equals("ibrahim") && password.equals("ibrahim")) {
+                JOptionPane.showMessageDialog(Login.this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                new Cars().setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(Login.this, "Invalid Username or Password", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        forgotPasswordButton.addActionListener(e -> JOptionPane.showMessageDialog(Login.this, "Redirecting to Forgot Password page...", "Info", JOptionPane.INFORMATION_MESSAGE));
-        createAccountButton.addActionListener(e -> JOptionPane.showMessageDialog(Login.this, "Redirecting to Create New Account page...", "Info", JOptionPane.INFORMATION_MESSAGE));
+        forgotPasswordButton.addActionListener(_ -> JOptionPane.showMessageDialog(Login.this, "Redirecting to Forgot Password page...", "Info", JOptionPane.INFORMATION_MESSAGE));
+        createAccountButton.addActionListener(_ -> JOptionPane.showMessageDialog(Login.this, "Redirecting to Create New Account page...", "Info", JOptionPane.INFORMATION_MESSAGE));
     }
 
     public static void main(String[] args) {

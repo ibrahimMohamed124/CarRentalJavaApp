@@ -1,9 +1,9 @@
 package com.mycompany.carrentaljavaapp;
 
-import Utils.Localization.AppTheme;
-import Utils.Localization.StyleUtils;
-import Utils.UIHelper.BaseFrame;
-import Utils.UIHelper.HintTextField;
+import utils.UIHelper.AppTheme;
+import utils.UIHelper.StyleUtils;
+import utils.UIHelper.BaseFrame;
+import utils.UIHelper.HintTextField;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

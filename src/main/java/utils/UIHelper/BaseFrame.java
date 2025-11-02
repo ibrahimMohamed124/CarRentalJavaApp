@@ -1,10 +1,9 @@
-package Utils.UIHelper;
+package utils.UIHelper;
 
-import Utils.Localization.AppTheme;
-import Utils.Localization.StyleUtils;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public abstract class BaseFrame extends JFrame {
 
@@ -22,6 +21,14 @@ public abstract class BaseFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setResizable(true);
+
+        // 🟡 إضافة أيقونة للنافذة
+        try {
+            Image icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/logo.png"))).getImage();
+            setIconImage(icon);
+        } catch (Exception e) {
+            System.err.println("⚠️ Icon not found: " + e.getMessage());
+        }
 
         // استدعاء دوال بناء العناصر المشتركة
         buildSidebar(activePage);
@@ -62,7 +69,7 @@ public abstract class BaseFrame extends JFrame {
 
         sidebar.add(Box.createVerticalGlue());
 
-        // زر Logout
+        // Logout Button
         logoutBtn = StyleUtils.createSidebarButton("Logout");
         logoutBtn.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(

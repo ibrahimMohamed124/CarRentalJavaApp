@@ -166,4 +166,14 @@ public class StyleUtils {
         });
         return btn;
     }
+
+    public static void applyTextFieldStyle(JTextField field) {
+        field.setFont(AppTheme.FIELD_FONT);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(AppTheme.FIELD_BORDER_GRAY, 1, true),
+                BorderFactory.createEmptyBorder(5, 12, 5, 12)
+        ));
+        field.setBackground(AppTheme.FIELD_BACKGROUND_WHITE);
+    }
+
 }

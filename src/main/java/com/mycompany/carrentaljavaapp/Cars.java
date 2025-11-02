@@ -3,13 +3,12 @@ package com.mycompany.carrentaljavaapp;
 import Utils.Localization.AppTheme;
 import Utils.Localization.StyleUtils;
 import Utils.UIHelper.BaseFrame;
+import Utils.UIHelper.HintTextField;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
-
 
 public class Cars extends BaseFrame {
 
@@ -36,7 +35,9 @@ public class Cars extends BaseFrame {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         searchPanel.setBackground(AppTheme.BACKGROUND_LIGHT);
 
-        searchField = StyleUtils.createStyledTextField();
+        // Search with hint text
+        searchField = new HintTextField("Search...");
+        StyleUtils.applyTextFieldStyle(searchField);
         searchField.setPreferredSize(new Dimension(250, 40));
 
         JLabel searchLabel = new JLabel("Search:");
@@ -75,7 +76,18 @@ public class Cars extends BaseFrame {
             public void changedUpdate(DocumentEvent e) { filterTable(); }
         });
 
-        // Form Fields
+        // Form Fields with hint text
+        regName = new HintTextField("Enter registration number");
+        brand = new HintTextField("Enter manufacturer name");
+        model = new HintTextField("Enter vehicle model");
+        price = new HintTextField("Enter daily price ($)");
+
+        // Apply same styling from StyleUtils
+        StyleUtils.applyTextFieldStyle(regName);
+        StyleUtils.applyTextFieldStyle(brand);
+        StyleUtils.applyTextFieldStyle(model);
+        StyleUtils.applyTextFieldStyle(price);
+
         JPanel bottomPanel = new JPanel(new BorderLayout(20, 20));
         bottomPanel.setBackground(AppTheme.FIELD_BACKGROUND_WHITE);
         bottomPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -85,11 +97,6 @@ public class Cars extends BaseFrame {
 
         JPanel inputGrid = new JPanel(new GridLayout(2, 4, 25, 15));
         inputGrid.setBackground(AppTheme.FIELD_BACKGROUND_WHITE);
-
-        regName = StyleUtils.createStyledTextField();
-        brand = StyleUtils.createStyledTextField();
-        model = StyleUtils.createStyledTextField();
-        price = StyleUtils.createStyledTextField();
 
         inputGrid.add(StyleUtils.createLabelFieldPanel("Registration No.", regName));
         inputGrid.add(StyleUtils.createLabelFieldPanel("Manufacturer", brand));

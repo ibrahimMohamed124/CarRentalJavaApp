@@ -14,28 +14,51 @@ The project follows a **layered architecture (MVC + DAO)** design, ensuring scal
 ```
 src/
 │
-├── database/           # Database connection and setup
-│   ├── DBConnection.java
-│   └── DatabaseSetup.java
+├── main/
+│   └── java/
+│       └── com/mycompany/carrentaljavaapp/
+│           │
+│           ├── DAO/                     # Data Access Objects
+│           │   └── CarDAO.java
+│           │
+│           ├── Database/                # Database connection and setup
+│           │   ├── car_sqlite.sqlite
+│           │   ├── DBConnection.java
+│           │   └── DatabaseSetup.java
+│           │
+│           ├── models/                  # Data models
+│           │   └── CarModel.java
+│           │
+│           ├── Utils/Localization/      # Utility classes
+│           │   ├── AppTheme.java
+│           │   ├── LocalizationUtil.java
+│           │   └── StyleUtils.java
+│           │
+│           ├── Login.java
+│           ├── Login.form
+│           ├── Rents.java
+│           ├── Rents.form
+│           ├── Returns.java
+│           ├── Returns.form
+│           ├── Splash.java
+│           ├── Splash.form
+│           ├── Test.java
+│           ├── Cars.java
+│           ├── Cars.form
+│           ├── Customers.java
+│           ├── Customers.form
+│           ├── CarRentalJavaApp.java
+│           └── ArabicSwingExample.java
 │
-├── models/             # Plain Java objects (entities)
-│   ├── Car.java
-│   ├── Customer.java
-│   └── Rental.java
+├── lib/                               # External libraries
+│   ├── flatlaf-3.6.2.jar
+│   ├── flatlaf-extras-3.4.1.jar
+│   └── sqlite-jdbc-3.50.3.0.jar
 │
-├── dao/                # Data Access Objects (CRUD + queries)
-│   ├── CarDAO.java
-│   ├── CustomerDAO.java
-│   └── RentalDAO.java
+├── resources/                         # (currently empty)
 │
-├── ui/                 # Graphical User Interface (Swing-based)
-│   ├── Login.java
-│   ├── Cars.java
-│   ├── ManageCars.java
-│   ├── Customer.java
-│   └── MainDashboard.java
-│
-└── Main.java           # Entry point of the application
+└── test/                              # Unit tests
+
 ```
 
 ---

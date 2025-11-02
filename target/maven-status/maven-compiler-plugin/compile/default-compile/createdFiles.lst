@@ -18,6 +18,7 @@ com\mycompany\carrentaljavaapp\Rents$1.class
 com\mycompany\carrentaljavaapp\Cars$11.class
 com\mycompany\carrentaljavaapp\CarRentalJavaApp.class
 com\mycompany\carrentaljavaapp\Cars$9.class
+com\mycompany\carrentaljavaapp\Cars$18.class
 Database\DBConnection.class
 com\mycompany\carrentaljavaapp\Customers$6.class
 com\mycompany\carrentaljavaapp\Login$10.class
@@ -35,6 +36,7 @@ Database\DatabaseSetup.class
 com\mycompany\carrentaljavaapp\Login.class
 com\mycompany\carrentaljavaapp\Rents$4.class
 com\mycompany\carrentaljavaapp\Cars$2.class
+com\mycompany\carrentaljavaapp\Cars$19.class
 com\mycompany\carrentaljavaapp\Login$6.class
 com\mycompany\carrentaljavaapp\Splash.class
 com\mycompany\carrentaljavaapp\Rents$10.class

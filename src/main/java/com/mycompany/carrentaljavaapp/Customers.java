@@ -17,6 +17,7 @@ public class Customers extends javax.swing.JFrame {
         setUndecorated(false); // remove title bar
         initComponents();
         setLocationRelativeTo(null); // prevent the window to run in top-left side
+
     }
 
     /**

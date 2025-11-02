@@ -1,642 +1,181 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.mycompany.carrentaljavaapp;
 
-import DAO.CarDAO;
-import Database.DatabaseSetup;
-import models.CarModel;
+import Utils.Localization.AppTheme;
+import Utils.Localization.StyleUtils;
+import Utils.UIHelper.BaseFrame;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import java.util.List;
-import javax.swing.JOptionPane;
 
-/**
- *
- * @author ibrah
- */
-public class Cars extends javax.swing.JFrame {
+public class Cars extends BaseFrame {
 
-    /**
-     * Creates new form Cars
-     */
+    private JTable jTable1;
+    private JTextField regName, brand, model, price, searchField;
+    private JButton addBtn, editBtn, deleteBtn, clearBtn;
+    private DefaultTableModel tableModel;
+    private TableRowSorter<DefaultTableModel> sorter;
+
     public Cars() {
-        setUndecorated(false); // remove title bar
-        initComponents();
-        setLocationRelativeTo(null); // prevent the window to run in top-left side
-
-        // for database setup
-        DatabaseSetup.initialize(); // عشان يتأكد إن الجدول اتنشأ
-        loadCars(); // تحميل السيارات عند فتح النافذة
-
-        // table actions
-        jTable1.setRowSelectionAllowed(true);
-        jTable1.setColumnSelectionAllowed(false);
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jTable1.setSelectionBackground(new java.awt.Color(255, 102, 102)); // لون التحديد (أحمر فاتح)
-        jTable1.setSelectionForeground(new java.awt.Color(255, 255, 255));
-
-        // تنقل بين الحقول بالأسهم ↓↑
-
-// من regName إلى brand
-        regName.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_DOWN || evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-                    brand.requestFocus();
-                }
-            }
-        });
-
-// من brand إلى model
-        brand.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                switch (evt.getKeyCode()) {
-                    case java.awt.event.KeyEvent.VK_UP:
-                        regName.requestFocus();
-                        break;
-                    case java.awt.event.KeyEvent.VK_DOWN:
-                    case java.awt.event.KeyEvent.VK_ENTER:
-                        model.requestFocus();
-                        break;
-                }
-            }
-        });
-
-// من model إلى price
-        model.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                switch (evt.getKeyCode()) {
-                    case java.awt.event.KeyEvent.VK_UP:
-                        brand.requestFocus();
-                        break;
-                    case java.awt.event.KeyEvent.VK_DOWN:
-                    case java.awt.event.KeyEvent.VK_ENTER:
-                        price.requestFocus();
-                        break;
-                }
-            }
-        });
-
-// من price إلى ComboBox
-        price.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                switch (evt.getKeyCode()) {
-                    case java.awt.event.KeyEvent.VK_UP -> model.requestFocus();
-                    case java.awt.event.KeyEvent.VK_DOWN, java.awt.event.KeyEvent.VK_ENTER -> jComboBox1.requestFocus();
-                }
-            }
-        });
-
-// من ComboBox إلى زرار Save
-        jComboBox1.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                switch (evt.getKeyCode()) {
-                    case java.awt.event.KeyEvent.VK_UP -> price.requestFocus();
-                    case java.awt.event.KeyEvent.VK_DOWN, java.awt.event.KeyEvent.VK_ENTER -> jButton4.requestFocus();
-                }
-            }
-        });
-
+        super("Vehicle Inventory", "Vehicles");
+        buildCarsPage();
     }
 
-    private void loadCars() {
-        List<CarModel> cars = DAO.CarDAO.getAllCars();
-        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
-        for (CarModel c : cars) {
-            model.addRow(new Object[]{c.getRegistration(), c.getBrand(), c.getModel(), c.getStatus(), c.getPrice()});
+    private void buildCarsPage() {
+        // Header
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(AppTheme.BACKGROUND_LIGHT);
+
+        JLabel title = new JLabel("Vehicle Inventory", SwingConstants.LEFT);
+        title.setFont(AppTheme.HEADER_FONT);
+        title.setForeground(AppTheme.SIDEBAR_BG_DARK);
+
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        searchPanel.setBackground(AppTheme.BACKGROUND_LIGHT);
+
+        searchField = StyleUtils.createStyledTextField();
+        searchField.setPreferredSize(new Dimension(250, 40));
+
+        JLabel searchLabel = new JLabel("Search:");
+        searchLabel.setFont(AppTheme.LABEL_FONT);
+        searchLabel.setForeground(AppTheme.SIDEBAR_BG_DARK);
+
+        searchPanel.add(searchLabel);
+        searchPanel.add(searchField);
+
+        headerPanel.add(title, BorderLayout.WEST);
+        headerPanel.add(searchPanel, BorderLayout.EAST);
+
+        // Table
+        String[] columns = {"Registration No.", "Manufacturer", "Model", "Daily Price"};
+        tableModel = new DefaultTableModel(columns, 0);
+        jTable1 = new JTable(tableModel);
+        jTable1.setRowHeight(35);
+        jTable1.setFont(AppTheme.FIELD_FONT);
+        jTable1.getTableHeader().setFont(AppTheme.BUTTON_FONT);
+        jTable1.getTableHeader().setReorderingAllowed(false);
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < jTable1.getColumnCount(); i++) {
+            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-    }
-    
-    private void clearFields(){
-        regName.setText("");
-        brand.setText("");
-        model.setText("");
-        price.setText("");
-    }
 
+        JScrollPane scrollPane = new JScrollPane(jTable1);
+        scrollPane.setBorder(BorderFactory.createLineBorder(AppTheme.FIELD_BORDER_GRAY));
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jPanel2 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        regName = new javax.swing.JTextField();
-        brand = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        model = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        price = new javax.swing.JTextField();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jLabel14 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jPanel2.setBackground(new java.awt.Color(204, 0, 51));
-
-        jLabel5.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Customer");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
-            }
+        sorter = new TableRowSorter<>(tableModel);
+        jTable1.setRowSorter(sorter);
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filterTable(); }
+            public void removeUpdate(DocumentEvent e) { filterTable(); }
+            public void changedUpdate(DocumentEvent e) { filterTable(); }
         });
 
-        jLabel8.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Rent Car");
-
-        jLabel9.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Return Car");
-
-        jLabel15.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setText("Logout");
-        jLabel15.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel15MouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(64, 64, 64)
-                        .addComponent(jLabel15))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel5))))
-                .addContainerGap(53, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(122, 122, 122)
-                .addComponent(jLabel5)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel15)
-                .addGap(40, 40, 40))
-        );
-
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 19, Short.MAX_VALUE)
-        );
-
-        jLabel6.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel6.setText("Cars List");
-
-        jLabel7.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel7.setText("Registeration Number");
-
-        regName.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
-        regName.setForeground(new java.awt.Color(204, 0, 51));
-        regName.setText("jTextField1");
-
-        brand.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
-        brand.setForeground(new java.awt.Color(204, 0, 51));
-        brand.setText("jTextField1");
-
-        jLabel10.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel10.setText("Brand");
-
-        model.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
-        model.setForeground(new java.awt.Color(204, 0, 51));
-        model.setText("jTextField1");
-
-        jLabel11.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel11.setText("Model");
-
-        price.setFont(new java.awt.Font("Century Gothic", 1, 12)); // NOI18N
-        price.setForeground(new java.awt.Color(204, 0, 51));
-        price.setText("jTextField1");
-
-        jLabel12.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel12.setText("Price");
-
-        jLabel13.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel13.setText("Status");
-
-        jComboBox1.setFont(new java.awt.Font("Century Gothic", 0, 14)); // NOI18N
-        jComboBox1.setForeground(new java.awt.Color(204, 0, 51));
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Booked", "Available" }));
-
-        jButton1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 0, 51));
-        jButton1.setText("Edit");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 0, 51));
-        jButton2.setText("Delete");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jButton3.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 0, 51));
-        jButton3.setText("Reset");
-        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton3MouseClicked(evt);
-            }
-        });
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        jButton4.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 0, 51));
-        jButton4.setText("Save");
-        jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton4MouseClicked(evt);
-            }
-        });
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jLabel14.setFont(new java.awt.Font("Century Gothic", 1, 22)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(204, 0, 51));
-        jLabel14.setText("Manage Cars");
-
-        jTable1.setFont(new java.awt.Font("Century Gothic", 0, 12)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Registeration", "Brand", "Model", "Status", "Price"
-            }
+        // Form Fields
+        JPanel bottomPanel = new JPanel(new BorderLayout(20, 20));
+        bottomPanel.setBackground(AppTheme.FIELD_BACKGROUND_WHITE);
+        bottomPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(AppTheme.FIELD_BORDER_GRAY),
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
-        jTable1.setRowHeight(25);
-        jTable1.setRowMargin(1);
-        jTable1.setRowSelectionAllowed(false);
-        jTable1.setShowHorizontalLines(true);
-        jTable1.setShowVerticalLines(true);
-        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTable1MouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(jTable1);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(351, 351, 351)
-                        .addComponent(jLabel6))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(61, 61, 61)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel14)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(regName, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(brand, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(model, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(18, 18, 18))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-                                    .addComponent(price)))
-                            .addComponent(jScrollPane1))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel14)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(brand, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel11)
-                                    .addComponent(jLabel13))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(model, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                                    .addComponent(jComboBox1))))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel12)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(price, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel7)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(25, 25, 25)
-                            .addComponent(regName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 427, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        JPanel inputGrid = new JPanel(new GridLayout(2, 4, 25, 15));
+        inputGrid.setBackground(AppTheme.FIELD_BACKGROUND_WHITE);
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+        regName = StyleUtils.createStyledTextField();
+        brand = StyleUtils.createStyledTextField();
+        model = StyleUtils.createStyledTextField();
+        price = StyleUtils.createStyledTextField();
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        inputGrid.add(StyleUtils.createLabelFieldPanel("Registration No.", regName));
+        inputGrid.add(StyleUtils.createLabelFieldPanel("Manufacturer", brand));
+        inputGrid.add(StyleUtils.createLabelFieldPanel("Model", model));
+        inputGrid.add(StyleUtils.createLabelFieldPanel("Daily Price ($)", price));
 
+        bottomPanel.add(inputGrid, BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        buttonsPanel.setBackground(AppTheme.FIELD_BACKGROUND_WHITE);
+
+        addBtn = StyleUtils.createActionStyledButton("Add Vehicle", AppTheme.PRIMARY_BLUE, AppTheme.PRIMARY_BLUE.darker());
+        editBtn = StyleUtils.createActionStyledButton("Update", AppTheme.PRIMARY_BLUE, AppTheme.PRIMARY_BLUE.darker());
+        deleteBtn = StyleUtils.createActionStyledButton("Delete", AppTheme.DANGER_RED, AppTheme.DANGER_RED.darker());
+        clearBtn = StyleUtils.createActionStyledButton("Clear Form", AppTheme.FIELD_BORDER_GRAY.darker(), AppTheme.FIELD_BORDER_GRAY.darker().darker());
+
+        buttonsPanel.add(clearBtn);
+        buttonsPanel.add(deleteBtn);
+        buttonsPanel.add(editBtn);
+        buttonsPanel.add(addBtn);
+        bottomPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        addBtn.addActionListener(e -> addCar());
+        editBtn.addActionListener(e -> editCar());
+        deleteBtn.addActionListener(e -> deleteCar());
+        clearBtn.addActionListener(e -> clearFields());
+
+        // Combine
+        JPanel contentPanel = new JPanel(new BorderLayout(25, 25));
+        contentPanel.add(headerPanel, BorderLayout.NORTH);
+        contentPanel.add(scrollPane, BorderLayout.CENTER);
+        contentPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        setContentPanel(contentPanel);
+    }
+
+    private void addCar() {
+        if (regName.getText().isEmpty() || brand.getText().isEmpty() || model.getText().isEmpty() || price.getText().isEmpty()) {
+            Toolkit.getDefaultToolkit().beep();
+            JOptionPane.showMessageDialog(this, "Please fill all fields!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        tableModel.addRow(new Object[]{regName.getText(), brand.getText(), model.getText(), price.getText()});
+        clearFields();
+    }
+
+    private void editCar() {
         int row = jTable1.getSelectedRow();
         if (row == -1) {
-            java.awt.Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(this, "Please select a car to edit!");
+            JOptionPane.showMessageDialog(this, "Select a vehicle to update!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        int modelRow = jTable1.convertRowIndexToModel(row);
+        tableModel.setValueAt(regName.getText(), modelRow, 0);
+        tableModel.setValueAt(brand.getText(), modelRow, 1);
+        tableModel.setValueAt(model.getText(), modelRow, 2);
+        tableModel.setValueAt(price.getText(), modelRow, 3);
+        clearFields();
+    }
 
-        String reg = regName.getText().trim();
-        String br = brand.getText().trim();
-        String mod = model.getText().trim();
-        String stat = jComboBox1.getSelectedItem().toString();
-        double pr = Double.parseDouble(price.getText());
-
-        CarModel car = new CarModel(reg, br, mod, stat, pr);
-        if (CarDAO.updateCar(car)) {
-            JOptionPane.showMessageDialog(this, "✅ Car Updated Successfully!");
-            loadCars();
-            clearFields();
-        } else {
-            JOptionPane.showMessageDialog(this, "❌ Failed to Update Car!");
-        }
-
-    }//GEN-LAST:event_jButton1MouseClicked
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-      
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+    private void deleteCar() {
         int row = jTable1.getSelectedRow();
-    if (row == -1) {
-        java.awt.Toolkit.getDefaultToolkit().beep();
-        JOptionPane.showMessageDialog(this, "Please select a car to delete!");
-        return;
-    }
-
-    String reg = jTable1.getValueAt(row, 0).toString();
-    int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this car?", "Confirm", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        if (CarDAO.deleteCar(reg)) {
-            JOptionPane.showMessageDialog(this, "🗑️ Car Deleted Successfully!");
-            loadCars();
-            clearFields();
-        } else {
-            java.awt.Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(this, "❌ Failed to Delete Car!");
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Select a vehicle to delete!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        int modelRow = jTable1.convertRowIndexToModel(row);
+        tableModel.removeRow(modelRow);
+        clearFields();
     }
-    }//GEN-LAST:event_jButton2MouseClicked
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+    private void clearFields() {
         regName.setText("");
         brand.setText("");
         model.setText("");
         price.setText("");
-    }//GEN-LAST:event_jButton3MouseClicked
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
-        String reg = regName.getText().trim();
-        String br = brand.getText().trim();
-        String mod = model.getText().trim();
-        String stat = jComboBox1.getSelectedItem().toString();
-        double pr = Double.parseDouble(price.getText());
-
-        if (reg.isEmpty() || br.isEmpty() || mod.isEmpty()) {
-            java.awt.Toolkit.getDefaultToolkit().beep();
-            JOptionPane.showMessageDialog(this, "Please fill all fields!");
-            return;
-        }
-
-        CarModel car = new CarModel(reg, br, mod, stat, pr);
-        if (CarDAO.addCar(car)) {
-            JOptionPane.showMessageDialog(this, "✅ Car Added Successfully!");
-            loadCars();
-            clearFields();
-            } else {
-        JOptionPane.showMessageDialog(this, "❌ Failed to Add Car!");
-        }
-    }//GEN-LAST:event_jButton4MouseClicked
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-        new Customers().setVisible(true);
-            this.dispose();
-    }//GEN-LAST:event_jLabel5MouseClicked
-
-    private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseClicked
-        this.dispose();
-        new Login().setVisible(true);
-    }//GEN-LAST:event_jLabel15MouseClicked
-
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // Get the selected row index
-        int selectedRow = jTable1.getSelectedRow();
-
-        // لو مفيش صف مختار
-        if (selectedRow == -1) jTable1.setRowSelectionInterval(selectedRow, selectedRow); // يحدد الصف فعليًا;
-
-        // Get data from the table model
-        String reg = jTable1.getValueAt(selectedRow, 0).toString();
-        String br = jTable1.getValueAt(selectedRow, 1).toString();
-        String mod = jTable1.getValueAt(selectedRow, 2).toString();
-        String stat = jTable1.getValueAt(selectedRow, 3).toString();
-        String pr = jTable1.getValueAt(selectedRow, 4).toString();
-
-        // Set values into text fields
-        regName.setText(reg);
-        brand.setText(br);
-        model.setText(mod);
-        jComboBox1.setSelectedItem(stat);
-        price.setText(pr);
-    }//GEN-LAST:event_jTable1MouseClicked
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Cars.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Cars.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Cars.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Cars.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Cars().setVisible(true);
-            }
-        });
+        jTable1.clearSelection();
     }
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField brand;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField model;
-    private javax.swing.JTextField price;
-    private javax.swing.JTextField regName;
-    // End of variables declaration//GEN-END:variables
+
+    private void filterTable() {
+        String query = searchField.getText().trim();
+        sorter.setRowFilter(query.isEmpty() ? null : RowFilter.regexFilter("(?i)" + query));
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new Cars().setVisible(true));
+    }
 }

@@ -15,6 +15,8 @@ public class Rents extends javax.swing.JFrame {
      */
     public Rents() {
         initComponents();
+
+
     }
 
     /**

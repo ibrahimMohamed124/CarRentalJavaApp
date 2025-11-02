@@ -1,6 +1,8 @@
 # 🚗 Car Rental Management System
 
 ## 🧠 Overview
+![preview image](preview.png)
+
 **Car Rental Management System** is a modern, desktop-based Java application built using **Java Swing** and **SQLite**.  
 It provides a full-featured solution for managing car rentals, customers, and transactions — all within a standalone, offline-capable application.
 
@@ -12,28 +14,51 @@ The project follows a **layered architecture (MVC + DAO)** design, ensuring scal
 ```
 src/
 │
-├── database/           # Database connection and setup
-│   ├── DBConnection.java
-│   └── DatabaseSetup.java
+├── main/
+│   └── java/
+│       └── com/mycompany/carrentaljavaapp/
+│           │
+│           ├── DAO/                     # Data Access Objects
+│           │   └── CarDAO.java
+│           │
+│           ├── Database/                # Database connection and setup
+│           │   ├── car_sqlite.sqlite
+│           │   ├── DBConnection.java
+│           │   └── DatabaseSetup.java
+│           │
+│           ├── models/                  # Data models
+│           │   └── CarModel.java
+│           │
+│           ├── Utils/Localization/      # Utility classes
+│           │   ├── AppTheme.java
+│           │   ├── LocalizationUtil.java
+│           │   └── StyleUtils.java
+│           │
+│           ├── Login.java
+│           ├── Login.form
+│           ├── Rents.java
+│           ├── Rents.form
+│           ├── Returns.java
+│           ├── Returns.form
+│           ├── Splash.java
+│           ├── Splash.form
+│           ├── Test.java
+│           ├── Cars.java
+│           ├── Cars.form
+│           ├── Customers.java
+│           ├── Customers.form
+│           ├── CarRentalJavaApp.java
+│           └── ArabicSwingExample.java
 │
-├── models/             # Plain Java objects (entities)
-│   ├── Car.java
-│   ├── Customer.java
-│   └── Rental.java
+├── lib/                               # External libraries
+│   ├── flatlaf-3.6.2.jar
+│   ├── flatlaf-extras-3.4.1.jar
+│   └── sqlite-jdbc-3.50.3.0.jar
 │
-├── dao/                # Data Access Objects (CRUD + queries)
-│   ├── CarDAO.java
-│   ├── CustomerDAO.java
-│   └── RentalDAO.java
+├── resources/                         # (currently empty)
 │
-├── ui/                 # Graphical User Interface (Swing-based)
-│   ├── Login.java
-│   ├── Cars.java
-│   ├── ManageCars.java
-│   ├── Customer.java
-│   └── MainDashboard.java
-│
-└── Main.java           # Entry point of the application
+└── test/                              # Unit tests
+
 ```
 
 ---
@@ -84,7 +109,7 @@ Each module is **loosely coupled**, allowing independent updates or database mig
 ## 🚀 How to Run
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/CarRentalSystem.git
+   git clone https://github.com/ibrahimMohamed124/CarRentalJavaApp
    cd CarRentalSystem
    ```
 
@@ -92,7 +117,7 @@ Each module is **loosely coupled**, allowing independent updates or database mig
 
 3. **Ensure SQLite Database Path Exists**
    ```text
-   C:/ProgramData/CarRental/car_sqlite.sqlite
+   car_sqlite.sqlite
    ```
    *(Created automatically on first launch if it doesn’t exist.)*
 
@@ -108,7 +133,7 @@ Located in:
 `src/database/DBConnection.java`
 
 ```java
-String path = "C:/ProgramData/CarRental/car_sqlite.sqlite";
+String path = "car_sqlite.sqlite";
 Connection conn = DriverManager.getConnection("jdbc:sqlite:" + path);
 ```
 
@@ -145,6 +170,6 @@ The system will auto-connect and initialize required tables via `DatabaseSetup.j
 
 ## 👨‍💻 Author
 **Ibrahim Mohamed**  
-Software Engineering Student | Java & Flutter Developer  
+Software Engineer
 📍 Egypt  
 🌐 [GitHub Profile](https://github.com/ibrahimMohamed124)

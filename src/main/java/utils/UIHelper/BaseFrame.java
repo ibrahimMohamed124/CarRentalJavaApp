@@ -1,7 +1,10 @@
 package utils.UIHelper;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.mycompany.carrentaljavaapp.Cars;
+import com.mycompany.carrentaljavaapp.Customers;
 import com.mycompany.carrentaljavaapp.Login;
+import com.mycompany.carrentaljavaapp.Rents;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,8 +71,32 @@ public abstract class BaseFrame extends JFrame {
         sidebar.add(carsNavItem);
         sidebar.add(rentalsNavItem);
         sidebar.add(customersNavItem);
-
         sidebar.add(Box.createVerticalGlue());
+
+        // ✅ إضافة ActionListeners للـ Navigation
+        carsNavItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                dispose(); // إغلاق الصفحة الحالية
+                new Cars().setVisible(true); // فتح صفحة السيارات
+            }
+        });
+
+        rentalsNavItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                dispose();
+                new Rents().setVisible(true);
+            }
+        });
+
+        customersNavItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                dispose();
+                new Customers().setVisible(true);
+            }
+        });
 
         // Logout Button
         logoutBtn = StyleUtils.createSidebarButton("Logout");

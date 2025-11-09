@@ -186,6 +186,7 @@ public class Login extends BaseFrame {
             if (username.equals("ibrahim") && password.equals("ibrahim")) {
                 JOptionPane.showMessageDialog(Login.this, "Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
                 new Cars().setVisible(true);
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(Login.this, "Invalid Username or Password", "Login Error", JOptionPane.ERROR_MESSAGE);
             }

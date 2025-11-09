@@ -1,6 +1,8 @@
 package utils.UIHelper;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.mycompany.carrentaljavaapp.Login;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
@@ -54,7 +56,7 @@ public abstract class BaseFrame extends JFrame {
         logo.setBorder(BorderFactory.createEmptyBorder(0, 0, 40, 0));
         sidebar.add(logo);
 
-        // عناصر الـNavigation
+        // Navigation Items
         JPanel carsNavItem = StyleUtils.createNavItem("Vehicles", activePage.equals("Vehicles"));
         JPanel rentalsNavItem = StyleUtils.createNavItem("Rentals", activePage.equals("Rentals"));
         JPanel customersNavItem = StyleUtils.createNavItem("Customers", activePage.equals("Customers"));
@@ -76,7 +78,7 @@ public abstract class BaseFrame extends JFrame {
                     this, "Are you sure you want to logout?", "Confirm Logout",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE
             );
-            if (confirm == JOptionPane.YES_OPTION) dispose();
+            if (confirm == JOptionPane.YES_OPTION) new Login().setVisible(true);
         });
 
         sidebar.add(Box.createVerticalStrut(20));

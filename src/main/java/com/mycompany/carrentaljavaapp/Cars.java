@@ -4,6 +4,7 @@ import utils.UIHelper.AppTheme;
 import utils.UIHelper.StyleUtils;
 import utils.UIHelper.BaseFrame;
 import utils.UIHelper.HintTextField;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -12,7 +13,7 @@ import java.awt.*;
 
 public class Cars extends BaseFrame {
 
-    private JTable jTable1;
+    private JTable carTable;
     private JTextField regName, brand, model, price, searchField;
     private JButton addBtn, editBtn, deleteBtn, clearBtn;
     private DefaultTableModel tableModel;
@@ -53,23 +54,23 @@ public class Cars extends BaseFrame {
         // Table
         String[] columns = {"Registration No.", "Manufacturer", "Model", "Daily Price"};
         tableModel = new DefaultTableModel(columns, 0);
-        jTable1 = new JTable(tableModel);
-        jTable1.setRowHeight(35);
-        jTable1.setFont(AppTheme.FIELD_FONT);
-        jTable1.getTableHeader().setFont(AppTheme.BUTTON_FONT);
-        jTable1.getTableHeader().setReorderingAllowed(false);
+        carTable = new JTable(tableModel);
+        carTable.setRowHeight(35);
+        carTable.setFont(AppTheme.FIELD_FONT);
+        carTable.getTableHeader().setFont(AppTheme.BUTTON_FONT);
+        carTable.getTableHeader().setReorderingAllowed(false);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        for (int i = 0; i < jTable1.getColumnCount(); i++) {
-            jTable1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        for (int i = 0; i < carTable.getColumnCount(); i++) {
+            carTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        JScrollPane scrollPane = new JScrollPane(jTable1);
+        JScrollPane scrollPane = new JScrollPane(carTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(AppTheme.FIELD_BORDER_GRAY));
 
         sorter = new TableRowSorter<>(tableModel);
-        jTable1.setRowSorter(sorter);
+        carTable.setRowSorter(sorter);
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) { filterTable(); }
             public void removeUpdate(DocumentEvent e) { filterTable(); }
@@ -145,12 +146,12 @@ public class Cars extends BaseFrame {
     }
 
     private void editCar() {
-        int row = jTable1.getSelectedRow();
+        int row = carTable.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Select a vehicle to update!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        int modelRow = jTable1.convertRowIndexToModel(row);
+        int modelRow = carTable.convertRowIndexToModel(row);
         tableModel.setValueAt(regName.getText(), modelRow, 0);
         tableModel.setValueAt(brand.getText(), modelRow, 1);
         tableModel.setValueAt(model.getText(), modelRow, 2);
@@ -159,12 +160,12 @@ public class Cars extends BaseFrame {
     }
 
     private void deleteCar() {
-        int row = jTable1.getSelectedRow();
+        int row = carTable.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Select a vehicle to delete!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        int modelRow = jTable1.convertRowIndexToModel(row);
+        int modelRow = carTable.convertRowIndexToModel(row);
         tableModel.removeRow(modelRow);
         clearFields();
     }
@@ -174,7 +175,7 @@ public class Cars extends BaseFrame {
         brand.setText("");
         model.setText("");
         price.setText("");
-        jTable1.clearSelection();
+        carTable.clearSelection();
     }
 
     private void filterTable() {

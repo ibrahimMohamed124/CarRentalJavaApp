@@ -74,6 +74,7 @@ public abstract class BaseFrame extends JFrame {
         // Logout Button
         logoutBtn = StyleUtils.createSidebarButton("Logout");
         logoutBtn.addActionListener(e -> {
+            Toolkit.getDefaultToolkit().beep();
             int confirm = JOptionPane.showConfirmDialog(
                     this, "Are you sure you want to logout?", "Confirm Logout",
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE

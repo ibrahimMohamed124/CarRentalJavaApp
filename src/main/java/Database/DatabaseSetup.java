@@ -8,8 +8,7 @@ public class DatabaseSetup {
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            // create table in string
-            String sql = """
+            String sqlCars = """
                 CREATE TABLE IF NOT EXISTS cars (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     registration TEXT UNIQUE NOT NULL,
@@ -19,13 +18,26 @@ public class DatabaseSetup {
                     price REAL NOT NULL
                 );
             """;
-            stmt.execute(sql);
 
-            System.out.println("✅ Tables created or already exist.");
+            String sqlRents = """
+                CREATE TABLE IF NOT EXISTS rents (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    car_registration TEXT NOT NULL,
+                    customer_name TEXT NOT NULL,
+                    rent_date TEXT NOT NULL,
+                    return_date TEXT NOT NULL,
+                    total_paid REAL NOT NULL,
+                    FOREIGN KEY(car_registration) REFERENCES cars(registration)
+                );
+            """;
+
+            stmt.execute(sqlCars);
+            stmt.execute(sqlRents);
+
+            System.out.println("✅ Database initialized.");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
-
